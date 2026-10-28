@@ -1,0 +1,11 @@
+#!/bin/zsh
+# Use tmux's opaque session ID, never interpret a session name as shell code.
+setopt pipefail
+selection=$(/opt/homebrew/bin/tmux list-sessions -F '#{session_id}	#{session_name}	#{session_windows} windows	#{session_path}' 2>/dev/null | /opt/homebrew/bin/fzf --delimiter='\t' --with-nth=2.. --prompt='session > ' --header='Enter to switch · Esc to cancel') || exit 0
+session_id=${selection%%$'\t'*}
+[[ $session_id == \$<-> ]] || exit 1
+if [[ -n ${TMUX:-} ]]; then
+  /opt/homebrew/bin/tmux switch-client -t "$session_id"
+else
+  /opt/homebrew/bin/tmux attach-session -t "$session_id"
+fi

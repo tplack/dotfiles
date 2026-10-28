@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Called by the tmux pane-title-changed hook (~/.tmux.conf) for panes running
+# Codex: names the pane from Codex's topic title, same as Claude panes get via
+# ~/.claude/hooks/sync-tmux-window-name.sh.
+pane=$1
+[ -n "$pane" ] || exit 0
+TMUX=${TMUX:-1} TMUX_PANE=$pane AGENT=codex exec "$HOME/.claude/hooks/sync-tmux-window-name.sh" </dev/null
