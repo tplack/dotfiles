@@ -1,106 +1,164 @@
-" Use the Solarized Dark theme
-set background=dark
-colorscheme solarized
-let g:solarized_termtrans=1
+set guifont=JetBrainsMono\ Nerd\ Font:h15
 
-" Make Vim more useful
-set nocompatible
-" Use the OS clipboard by default (on versions compiled with `+clipboard`)
-set clipboard=unnamed
-" Enhance command-line completion
-set wildmenu
-" Allow cursor keys in insert mode
-set esckeys
-" Allow backspace in insert mode
-set backspace=indent,eol,start
-" Optimize for fast terminal connections
-set ttyfast
-" Add the g flag to search/replace by default
-set gdefault
-" Use UTF-8 without BOM
-set encoding=utf-8 nobomb
-" Change mapleader
-let mapleader=","
-" Don’t add empty newlines at the end of files
-set binary
-set noeol
-" Centralize backups, swapfiles and undo history
-set backupdir=~/.vim/backups
-set directory=~/.vim/swaps
-if exists("&undodir")
-	set undodir=~/.vim/undo
-endif
+nnoremap <D-=> :set guifont=JetBrainsMono\ Nerd\ Font:h16<CR>
+nnoremap <D--> :set guifont=JetBrainsMono\ Nerd\ Font:h14<CR>
 
-" Don’t create backups when editing files in certain directories
-set backupskip=/tmp/*,/private/tmp/*
+" ============================================================================
+" Core sanity
+" ============================================================================
 
-" Respect modeline in files
-set modeline
-set modelines=4
-" Enable per-directory .vimrc files and disable unsafe commands in them
-set exrc
-set secure
-" Enable line numbers
+set nocompatible              " Use Vim, not vi
+set encoding=utf-8
+set fileencoding=utf-8
+set hidden                    " Allow background buffers
+set updatetime=300
+set shortmess+=c
+set signcolumn=yes
+set nowrap
+set scrolloff=5
+set sidescrolloff=5
+
+" ============================================================================
+" UI / Appearance
+" ============================================================================
+
+syntax enable
 set number
-" Enable syntax highlighting
-syntax on
-" Highlight current line
+set relativenumber
 set cursorline
-" Make tabs as wide as two spaces
-set tabstop=2
-" Show “invisible” characters
-set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_
-set list
-" Highlight searches
-set hlsearch
-" Ignore case of searches
-set ignorecase
-" Highlight dynamically as pattern is typed
-set incsearch
-" Always show status line
-set laststatus=2
-" Enable mouse in all modes
-set mouse=a
-" Disable error bells
-set noerrorbells
-" Don’t reset cursor to start of line when moving around.
-set nostartofline
-" Show the cursor position
-set ruler
-" Don’t show the intro message when starting Vim
-set shortmess=atI
-" Show the current mode
-set showmode
-" Show the filename in the window titlebar
-set title
-" Show the (partial) command as it’s being typed
 set showcmd
-" Use relative line numbers
-if exists("&relativenumber")
-	set relativenumber
-	au BufReadPost * set relativenumber
-endif
-" Start scrolling three lines before the horizontal window border
-set scrolloff=3
+set showmode
+set ruler
+set laststatus=2
+set wildmenu
+set wildmode=longest:full,full
 
-" Strip trailing whitespace (,ss)
-function! StripWhitespace()
-	let save_cursor = getpos(".")
-	let old_query = getreg('/')
-	:%s/\s\+$//e
-	call setpos('.', save_cursor)
-	call setreg('/', old_query)
-endfunction
-noremap <leader>ss :call StripWhitespace()<CR>
-" Save a file as root (,W)
-noremap <leader>W :w !sudo tee % > /dev/null<CR>
+set termguicolors             " True color
+set background=dark
+colorscheme desert            " Safe default; override if you prefer
 
-" Automatic commands
-if has("autocmd")
-	" Enable file type detection
-	filetype on
-	" Treat .json files as .js
-	autocmd BufNewFile,BufRead *.json setfiletype json syntax=javascript
-	" Treat .md files as Markdown
-	autocmd BufNewFile,BufRead *.md setlocal filetype=markdown
+" ============================================================================
+" Indentation & whitespace
+" ============================================================================
+
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set smartindent
+set autoindent
+
+set list
+set listchars=tab:▸\ ,trail:·,extends:>,precedes:<,nbsp:␣
+
+" ============================================================================
+" Searching
+" ============================================================================
+
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+
+nnoremap <silent> <Esc><Esc> :nohlsearch<CR>
+
+" ============================================================================
+" Editing behavior
+" ============================================================================
+
+set backspace=indent,eol,start
+set whichwrap+=<,>,[,]
+set clipboard=unnamedplus     " macOS + modern Linux
+set splitbelow
+set splitright
+
+" Persistent undo
+set undofile
+set undodir=~/.vim/undo//
+
+" ============================================================================
+" Files & backups
+" ============================================================================
+
+set nobackup
+set nowritebackup
+set noswapfile
+
+set autoread
+au FocusGained,BufEnter * checktime
+
+" ============================================================================
+" Navigation mappings
+" ============================================================================
+
+nnoremap j gj
+nnoremap k gk
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" ============================================================================
+" Leader mappings
+" ============================================================================
+
+let mapleader=" "
+
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>Q :qa!<CR>
+nnoremap <leader>x :x<CR>
+
+" ============================================================================
+" Filetype-specific behavior
+" ============================================================================
+
+filetype plugin indent on
+
+autocmd FileType markdown setlocal wrap linebreak
+autocmd FileType markdown setlocal spell
+
+autocmd FileType yaml setlocal ts=2 sw=2 sts=2
+autocmd FileType json setlocal ts=2 sw=2 sts=2
+
+" ============================================================================
+" Completion
+" ============================================================================
+
+set completeopt=menuone,noinsert,noselect
+set omnifunc=syntaxcomplete#Complete
+
+" ============================================================================
+" MacVim / GUI compatibility
+" ============================================================================
+
+if has("gui_running")
+  set guioptions=
+  set guicursor=
+  set linespace=0
 endif
+
+" ============================================================================
+" Quality-of-life
+" ============================================================================
+
+" Yank highlight
+augroup YankHighlight
+  autocmd!
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank()
+augroup END
+
+" Restore cursor position
+autocmd BufReadPost *
+  \ if line("'\"") > 0 && line("'\"") <= line("$") |
+  \   execute "normal! g`\"" |
+  \ endif
+
+" ============================================================================
+" Performance
+" ============================================================================
+
+set lazyredraw
+set ttyfast
+

@@ -1,14 +1,15 @@
-# Compiled Python files
-*.pyc
-
-# Folder view configuration files
 .DS_Store
-Desktop.ini
+*.swp
+*.swo
+*.tmp
 
-# Thumbnail cache files
-._*
-Thumbs.db
-
-# Files that might appear on external disks
-.Spotlight-V100
-.Trashes
+# Local-only credentials and machine state
+.extra
+.netrc
+.namecom-credentials
+.mbsyncrc
+.claude.json*
+.zsh_history
+.bash_history
+.zcompdump*
+.viminfo
